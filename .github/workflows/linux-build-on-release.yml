@@ -9,7 +9,7 @@ on:
 
 jobs:
   build-and-release:
-    name: Build and upload artefact
+    name: Build
     runs-on: ubuntu-latest
     steps:
 
@@ -40,8 +40,10 @@ jobs:
       if: github.event_name != 'pull_request'
       uses: actions/upload-artifact@v2
       with:
-        name: wakapi_linux_amd64.zip
-        path: release.zip
+        name: wakapi_linux_amd64
+        path: |
+          wakapi
+          config.yml
 
     - name: Upload built executable to Release
       if: github.event_name == 'pull_request'
