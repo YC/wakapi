@@ -25,7 +25,7 @@ jobs:
     - name: Get dependencies
       run: |
         go get github.com/markbates/pkger/cmd/pkger
-        go get -v -t -d ./...
+        go get
         go generate
 
     - name: Build
@@ -35,15 +35,6 @@ jobs:
       run: |
         cp config.default.yml config.yml
         zip -9 release.zip wakapi config.yml
-
-    - name: Upload artefact
-      if: github.event_name != 'release'
-      uses: actions/upload-artifact@v2
-      with:
-        name: wakapi_linux_amd64
-        path: |
-          wakapi
-          config.yml
 
     - name: Upload built executable to Release
       if: github.event_name == 'release'
