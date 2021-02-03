@@ -1,0 +1,51 @@
+name: Publish Docker Image
+
+on:
+  release:
+    types:
+      - published
+
+jobs:
+  docker-publish:
+    runs-on: ubuntu-latest
+    if: contains(github.ref, '*.*.*')
+    steps:
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v1
+
+      - name: Cache Docker layers
+        uses: actions/cache@v2
+        with:
+          path: /tmp/.buildx-cache
+          key: ${{ runner.os }}-buildx-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-buildx-
+
+      # https://stackoverflow.com/questions/58177786
+      - name: Get tag
+        run: echo "GIT_TAG=`echo $(git describe --tags --abbrev=0)`" >> $GITHUB_ENV
+
+      - name: Test tag
+        run: echo ${{ GIT_TAG }}
+
+      - name: Build and push to Github Packages
+        uses: docker/build-push-action@v2
+        with:
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+          registry: docker.pkg.github.com
+          repository: ${{ github.repository }}/wakapi
+          push: true
+          tags: muety/wakapi:latest,muety/wakapi:${{ GIT_TAG }}
+          cache-from: type=local,src=/tmp/.buildx-cache
+          cache-to: type=local,dest=/tmp/.buildx-cache
+
+      - name: Build and push to Docker Hub
+        uses: docker/build-push-action@v2
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+          push: true
+          tags: n1try/wakapi:latest,n1try/wakapi:${{ GIT_TAG }}
+          cache-from: type=local,src=/tmp/.buildx-cache
+          cache-to: type=local,dest=/tmp/.buildx-cache
