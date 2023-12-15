@@ -1,9 +1,7 @@
 name: Release
 
 on:
-  release:
-    types:
-      - published
+  push:
 
 jobs:
   release:
@@ -71,8 +69,3 @@ jobs:
       if: "${{ matrix.GOOS != 'windows' }}"
       run: |
         zip -9 wakapi_${{ matrix.GOOS }}_${{ matrix.GOARCH }}.zip *
-
-    - name: Upload built executable to Release
-      uses: softprops/action-gh-release@v1
-      with:
-        files: ./dist/*.zip
