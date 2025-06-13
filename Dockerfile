@@ -1,4 +1,4 @@
-FROM --platform=$BUILDPLATFORM golang:alpine AS build-env
+FROM --platform=$BUILDPLATFORM mirror.gcr.io/golang:alpine AS build-env
 WORKDIR /src
 
 RUN wget "https://raw.githubusercontent.com/vishnubob/wait-for-it/master/wait-for-it.sh" -O wait-for-it.sh && \
@@ -27,7 +27,7 @@ RUN mkdir ./data ./app && \
 # to override config values using `-e` syntax.
 # Available options can be found in [README.md#-configuration](README.md#-configuration)
 
-FROM alpine:3
+FROM mirror.gcr.io/alpine:3
 WORKDIR /app
 
 RUN addgroup -g 1000 app && \
